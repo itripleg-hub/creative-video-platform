@@ -11,7 +11,7 @@ sleep 5
 
 echo ""
 echo "Services running:"
-echo "  PostgreSQL:    localhost:5432  (creative/creative)"
+echo "  PostgreSQL:    localhost:5433  (creative/creative)"
 echo "  MinIO API:     localhost:9000  (minioadmin/minioadmin)"
 echo "  MinIO Console: localhost:9001"
 echo ""

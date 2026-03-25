@@ -86,7 +86,7 @@ Creates a Python venv, installs deps, and starts the rendering worker.
 | Frontend | http://localhost:5173 | — |
 | Backend API | http://localhost:8080 | — |
 | MinIO Console | http://localhost:9001 | minioadmin / minioadmin |
-| PostgreSQL | localhost:5432 | creative / creative |
+| PostgreSQL | localhost:5433 | creative / creative |
 
 ## Architecture
 

@@ -41,7 +41,7 @@ CREATE DATABASE creative_video OWNER creative;
 ### 2. Environment variables
 
 ```bash
-export DB_URL=jdbc:postgresql://localhost:5432/creative_video
+export DB_URL=jdbc:postgresql://localhost:5433/creative_video
 export DB_USERNAME=creative
 export DB_PASSWORD=creative
 export JWT_SECRET=your-256-bit-secret-key-here-change-in-production

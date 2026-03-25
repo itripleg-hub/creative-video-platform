@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "$0")/../backend"
 
-export DB_URL=jdbc:postgresql://localhost:5432/creative_video
+export DB_URL=jdbc:postgresql://localhost:5433/creative_video
 export DB_USERNAME=creative
 export DB_PASSWORD=creative
 export JWT_SECRET=dev-secret-change-in-production-must-be-256-bits-long-enough
