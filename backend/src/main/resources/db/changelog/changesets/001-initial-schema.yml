@@ -1,0 +1,551 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-initial-schema
+      author: system
+      changes:
+        # ─── users ──────────────────────────────────────────────
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(50)
+                  defaultValue: USER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: activated
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # ─── refresh_tokens ─────────────────────────────────────
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_refresh_tokens_user
+                    references: users(id)
+                    deleteCascade: true
+              - column:
+                  name: token_hash
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: expires_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revoked
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # ─── video_assets ────────────────────────────────────────
+        - createTable:
+            tableName: video_assets
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_video_assets_owner
+                    references: users(id)
+              - column:
+                  name: storage_path
+                  type: VARCHAR(2048)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: original_filename
+                  type: VARCHAR(512)
+              - column:
+                  name: mime_type
+                  type: VARCHAR(128)
+              - column:
+                  name: size_bytes
+                  type: BIGINT
+              - column:
+                  name: duration_ms
+                  type: BIGINT
+              - column:
+                  name: width
+                  type: INTEGER
+              - column:
+                  name: height
+                  type: INTEGER
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # ─── templates ───────────────────────────────────────────
+        - createTable:
+            tableName: templates
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  defaultValue: DRAFT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_templates_created_by
+                    references: users(id)
+              - column:
+                  name: current_version
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # ─── template_versions ──────────────────────────────────
+        - createTable:
+            tableName: template_versions
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: template_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_template_versions_template
+                    references: templates(id)
+                    deleteCascade: true
+              - column:
+                  name: version
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: aspect_ratio_configs
+                  type: JSONB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: editor_settings
+                  type: JSONB
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: template_versions
+            columnNames: template_id, version
+            constraintName: uq_template_versions_template_version
+
+        # ─── layer_definitions ──────────────────────────────────
+        - createTable:
+            tableName: layer_definitions
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: template_version_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_layer_defs_template_version
+                    references: template_versions(id)
+                    deleteCascade: true
+              - column:
+                  name: layer_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: layer_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: editable
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: translatable
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: visible_by_default
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: locked_by_default
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: z_index
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_style_json
+                  type: JSONB
+              - column:
+                  name: layout_json
+                  type: JSONB
+              - column:
+                  name: constraints_json
+                  type: JSONB
+              - column:
+                  name: aspect_ratio_overrides
+                  type: JSONB
+
+        - addUniqueConstraint:
+            tableName: layer_definitions
+            columnNames: template_version_id, layer_id
+            constraintName: uq_layer_defs_version_layer_id
+
+        # ─── jobs ────────────────────────────────────────────────
+        - createTable:
+            tableName: jobs
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_jobs_owner
+                    references: users(id)
+              - column:
+                  name: template_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_jobs_template
+                    references: templates(id)
+              - column:
+                  name: template_version_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_jobs_template_version
+                    references: template_versions(id)
+              - column:
+                  name: source_video_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_jobs_source_video
+                    references: video_assets(id)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_name
+                  type: VARCHAR(255)
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # ─── job_executions ──────────────────────────────────────
+        - createTable:
+            tableName: job_executions
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: job_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_job_executions_job
+                    references: jobs(id)
+                    deleteCascade: true
+              - column:
+                  name: execution_number
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: submitted_config_json
+                  type: JSONB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: started_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: finished_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: error_message
+                  type: TEXT
+
+        # ─── execution_steps ─────────────────────────────────────
+        - createTable:
+            tableName: execution_steps
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: job_execution_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_execution_steps_execution
+                    references: job_executions(id)
+                    deleteCascade: true
+              - column:
+                  name: step_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: started_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: finished_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: details_json
+                  type: JSONB
+              - column:
+                  name: error_message
+                  type: TEXT
+
+        # ─── job_results ─────────────────────────────────────────
+        - createTable:
+            tableName: job_results
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: job_execution_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_job_results_execution
+                    references: job_executions(id)
+                    deleteCascade: true
+              - column:
+                  name: language_code
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: aspect_ratio
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: output_video_path
+                  type: VARCHAR(2048)
+              - column:
+                  name: thumbnail_path
+                  type: VARCHAR(2048)
+              - column:
+                  name: metadata_json
+                  type: JSONB
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # ─── indexes ─────────────────────────────────────────────
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: jobs
+            indexName: idx_jobs_owner_id
+            columns:
+              - column:
+                  name: owner_id
+        - createIndex:
+            tableName: jobs
+            indexName: idx_jobs_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: job_executions
+            indexName: idx_job_executions_job_id
+            columns:
+              - column:
+                  name: job_id
+        - createIndex:
+            tableName: execution_steps
+            indexName: idx_execution_steps_execution_id
+            columns:
+              - column:
+                  name: job_execution_id
+        - createIndex:
+            tableName: job_results
+            indexName: idx_job_results_execution_id
+            columns:
+              - column:
+                  name: job_execution_id
+        - createIndex:
+            tableName: layer_definitions
+            indexName: idx_layer_defs_template_version_id
+            columns:
+              - column:
+                  name: template_version_id
