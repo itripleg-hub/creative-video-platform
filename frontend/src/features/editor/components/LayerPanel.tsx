@@ -20,7 +20,6 @@ export function LayerPanel() {
     selectLayer,
     toggleLayerVisibility,
     toggleLayerLock,
-    updateLayer,
     setLayers,
   } = useEditorStore();
 
@@ -64,7 +63,7 @@ export function LayerPanel() {
           </div>
         ) : (
           <ul className="divide-y divide-gray-700/50">
-            {layers.map((layer, index) => (
+            {layers.map((layer) => (
               <li
                 key={layer.layerId}
                 onClick={() => selectLayer(layer.layerId)}

@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
@@ -20,7 +20,7 @@ import { ConfirmModal } from '@/shared/components/ui/Modal';
 import { useJob, useCancelJob, useRetryJob, useJobExecutions, jobKeys } from '@/shared/hooks/useJobs';
 import { useJobSse } from '@/shared/hooks/useSse';
 import { useJobResults } from '@/shared/hooks/useResults';
-import type { ExecutionStep, JobExecution, StepStatus, StepType, SseEvent } from '@/shared/types';
+import type { JobExecution, StepStatus, StepType, SseEvent } from '@/shared/types';
 import { useState } from 'react';
 
 const STEP_LABELS: Record<StepType, string> = {
@@ -114,7 +114,7 @@ export function JobDetailPage() {
   // SSE for real-time updates
   useJobSse(id || '', {
     enabled: Boolean(id) && (job?.status === 'PROCESSING' || job?.status === 'PENDING'),
-    onEvent: (event: SseEvent) => {
+    onEvent: (_event: SseEvent) => {
       qc.invalidateQueries({ queryKey: jobKeys.detail(id || '') });
       qc.invalidateQueries({ queryKey: jobKeys.executions(id || '') });
     },

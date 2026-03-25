@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import {
   CheckCircle2,
   ChevronRight,

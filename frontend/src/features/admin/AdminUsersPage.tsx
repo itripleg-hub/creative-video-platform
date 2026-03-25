@@ -9,7 +9,7 @@ import { Badge } from '@/shared/components/ui/Badge';
 import { DataTable, Column } from '@/shared/components/DataTable';
 import { Modal, ConfirmModal } from '@/shared/components/ui/Modal';
 import { useToastStore } from '@/shared/stores/toastStore';
-import { adminApi, AdminUserCreateRequest, AdminUserUpdateRequest } from '@/shared/api/admin';
+import { adminApi, AdminUserUpdateRequest } from '@/shared/api/admin';
 import type { User as UserType } from '@/shared/types';
 
 const userKeys = {

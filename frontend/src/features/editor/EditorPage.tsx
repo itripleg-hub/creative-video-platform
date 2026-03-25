@@ -38,7 +38,6 @@ export function EditorPage() {
   const {
     template,
     layers,
-    selectedLayerId,
     activeAspectRatio,
     zoom,
     showGrid,
@@ -217,7 +216,7 @@ export function EditorPage() {
         <div className="flex items-center gap-1.5">
           {/* Undo/Redo */}
           <button
-            onClick={undo}
+            onClick={() => undo()}
             disabled={!canUndo}
             title="Undo (Ctrl+Z)"
             className="rounded p-1.5 text-gray-400 hover:bg-gray-700 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -225,7 +224,7 @@ export function EditorPage() {
             <Undo2 className="h-4 w-4" />
           </button>
           <button
-            onClick={redo}
+            onClick={() => redo()}
             disabled={!canRedo}
             title="Redo (Ctrl+Y)"
             className="rounded p-1.5 text-gray-400 hover:bg-gray-700 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"

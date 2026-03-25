@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, Play, ChevronRight } from 'lucide-react';
-import { clsx } from 'clsx';
 import { Button } from '@/shared/components/ui/Button';
 import { Spinner } from '@/shared/components/ui/Spinner';
 import { Badge } from '@/shared/components/ui/Badge';

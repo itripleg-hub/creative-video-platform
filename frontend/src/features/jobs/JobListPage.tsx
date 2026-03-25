@@ -8,7 +8,7 @@ import { JobStatusBadge } from '@/shared/components/ui/Badge';
 import { DataTable, Column } from '@/shared/components/DataTable';
 import { ConfirmModal } from '@/shared/components/ui/Modal';
 import { useJobs, useCancelJob, useRetryJob } from '@/shared/hooks/useJobs';
-import type { Job, JobStatus } from '@/shared/types';
+import type { Job } from '@/shared/types';
 
 export function JobListPage() {
   const navigate = useNavigate();

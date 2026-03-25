@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import Konva from 'konva';
 import { Stage, Layer, Rect, Text, Group, Transformer } from 'react-konva';
 import { useEditorStore } from '@/shared/stores/editorStore';
@@ -119,7 +119,7 @@ function TextLayerNode({
   );
 }
 
-export function CanvasStage({ width, height, aspectRatioConfig }: CanvasStageProps) {
+export function CanvasStage({ width, height, aspectRatioConfig: _aspectRatioConfig }: CanvasStageProps) {
   const stageRef = useRef<Konva.Stage>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
 

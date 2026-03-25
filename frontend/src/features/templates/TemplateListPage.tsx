@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Copy, Edit2, Trash2, Play, MoreVertical } from 'lucide-react';
+import { Plus, Search, Copy, Edit2, Trash2, Play } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { Select } from '@/shared/components/ui/Select';
@@ -13,7 +13,6 @@ import {
   useCloneTemplate,
 } from '@/shared/hooks/useTemplates';
 import type { TemplateSummary } from '@/shared/types';
-import { useRef, useState as useLocalState } from 'react';
 
 export function TemplateListPage() {
   const navigate = useNavigate();
@@ -21,7 +20,6 @@ export function TemplateListPage() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<TemplateSummary | null>(null);
-  const [openMenuId, setOpenMenuId] = useLocalState<string | null>(null);
 
   const { data, isLoading } = useTemplates({
     page,

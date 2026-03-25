@@ -1,33 +1,21 @@
 import { create } from 'zustand';
 import { temporal } from 'zundo';
-import type { Layer, Template, ValidationIssue } from '@/shared/types';
+import type { Layer, Template, ValidationIssue } from '../types';
 
 interface EditorState {
-  // Template being edited
   template: Template | null;
-
-  // Active state
   selectedLayerId: string | null;
   activeAspectRatio: string;
-
-  // Canvas state
   zoom: number;
   panX: number;
   panY: number;
-
-  // Layers (editable copy)
   layers: Layer[];
-
-  // Validation
   validationIssues: ValidationIssue[];
-
-  // UI state
   showGrid: boolean;
   showSafeArea: boolean;
   showLayerPanel: boolean;
   showPropertyPanel: boolean;
 
-  // Actions
   setTemplate: (template: Template) => void;
   setLayers: (layers: Layer[]) => void;
   updateLayer: (layerId: string, updates: Partial<Layer>) => void;
@@ -49,7 +37,21 @@ interface EditorState {
   reset: () => void;
 }
 
-const initialState = {
+const initialState: Pick<
+  EditorState,
+  | 'template'
+  | 'selectedLayerId'
+  | 'activeAspectRatio'
+  | 'zoom'
+  | 'panX'
+  | 'panY'
+  | 'layers'
+  | 'validationIssues'
+  | 'showGrid'
+  | 'showSafeArea'
+  | 'showLayerPanel'
+  | 'showPropertyPanel'
+> = {
   template: null,
   selectedLayerId: null,
   activeAspectRatio: '16:9',
@@ -66,105 +68,98 @@ const initialState = {
 
 export const useEditorStore = create<EditorState>()(
   temporal(
-    (set) => ({
+    (set: (fn: EditorState | Partial<EditorState> | ((state: EditorState) => Partial<EditorState>)) => void) => ({
       ...initialState,
 
-      setTemplate: (template) => {
+      setTemplate: (template: Template) => {
         set({
           template,
-          layers: [...template.layers].sort((a, b) => b.zIndex - a.zIndex),
+          layers: [...template.layers].sort((a: Layer, b: Layer) => b.zIndex - a.zIndex),
           activeAspectRatio:
-            template.aspectRatioConfigs.find((c) => c.isPrimary)?.ratio ||
+            template.aspectRatioConfigs.find((c: { isPrimary?: boolean }) => c.isPrimary)?.ratio ||
             template.aspectRatioConfigs[0]?.ratio ||
             '16:9',
         });
       },
 
-      setLayers: (layers) => set({ layers }),
+      setLayers: (layers: Layer[]) => set({ layers }),
 
-      updateLayer: (layerId, updates) =>
-        set((state) => ({
-          layers: state.layers.map((l) =>
+      updateLayer: (layerId: string, updates: Partial<Layer>) =>
+        set((state: EditorState) => ({
+          layers: state.layers.map((l: Layer) =>
             l.layerId === layerId ? { ...l, ...updates } : l
           ),
         })),
 
-      updateLayerContent: (layerId, content) =>
-        set((state) => ({
-          layers: state.layers.map((l) =>
+      updateLayerContent: (layerId: string, content: Partial<Layer['content']>) =>
+        set((state: EditorState) => ({
+          layers: state.layers.map((l: Layer) =>
             l.layerId === layerId
               ? { ...l, content: { ...l.content, ...content } }
               : l
           ),
         })),
 
-      updateLayerStyle: (layerId, style) =>
-        set((state) => ({
-          layers: state.layers.map((l) =>
+      updateLayerStyle: (layerId: string, style: Partial<Layer['style']>) =>
+        set((state: EditorState) => ({
+          layers: state.layers.map((l: Layer) =>
             l.layerId === layerId
               ? { ...l, style: { ...l.style, ...style } }
               : l
           ),
         })),
 
-      updateLayerLayout: (layerId, layout) =>
-        set((state) => ({
-          layers: state.layers.map((l) =>
+      updateLayerLayout: (layerId: string, layout: Partial<Layer['layout']>) =>
+        set((state: EditorState) => ({
+          layers: state.layers.map((l: Layer) =>
             l.layerId === layerId
               ? { ...l, layout: { ...l.layout, ...layout } }
               : l
           ),
         })),
 
-      reorderLayers: (fromIndex, toIndex) =>
-        set((state) => {
+      reorderLayers: (fromIndex: number, toIndex: number) =>
+        set((state: EditorState) => {
           const newLayers = [...state.layers];
           const [moved] = newLayers.splice(fromIndex, 1);
           newLayers.splice(toIndex, 0, moved);
-          // Update zIndex values
           return {
-            layers: newLayers.map((l, i) => ({
+            layers: newLayers.map((l: Layer, i: number) => ({
               ...l,
               zIndex: newLayers.length - i,
             })),
           };
         }),
 
-      selectLayer: (layerId) => set({ selectedLayerId: layerId }),
+      selectLayer: (layerId: string | null) => set({ selectedLayerId: layerId }),
+      setActiveAspectRatio: (ratio: string) => set({ activeAspectRatio: ratio }),
+      setZoom: (zoom: number) => set({ zoom: Math.max(0.1, Math.min(5, zoom)) }),
+      setPan: (panX: number, panY: number) => set({ panX, panY }),
 
-      setActiveAspectRatio: (ratio) => set({ activeAspectRatio: ratio }),
-
-      setZoom: (zoom) => set({ zoom: Math.max(0.1, Math.min(5, zoom)) }),
-
-      setPan: (panX, panY) => set({ panX, panY }),
-
-      toggleLayerVisibility: (layerId) =>
-        set((state) => ({
-          layers: state.layers.map((l) =>
+      toggleLayerVisibility: (layerId: string) =>
+        set((state: EditorState) => ({
+          layers: state.layers.map((l: Layer) =>
             l.layerId === layerId ? { ...l, visible: !l.visible } : l
           ),
         })),
 
-      toggleLayerLock: (layerId) =>
-        set((state) => ({
-          layers: state.layers.map((l) =>
+      toggleLayerLock: (layerId: string) =>
+        set((state: EditorState) => ({
+          layers: state.layers.map((l: Layer) =>
             l.layerId === layerId ? { ...l, locked: !l.locked } : l
           ),
         })),
 
-      setValidationIssues: (validationIssues) => set({ validationIssues }),
-
-      toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
-      toggleSafeArea: () => set((state) => ({ showSafeArea: !state.showSafeArea })),
-      toggleLayerPanel: () => set((state) => ({ showLayerPanel: !state.showLayerPanel })),
-      togglePropertyPanel: () =>
-        set((state) => ({ showPropertyPanel: !state.showPropertyPanel })),
-
+      setValidationIssues: (validationIssues: ValidationIssue[]) => set({ validationIssues }),
+      toggleGrid: () => set((state: EditorState) => ({ showGrid: !state.showGrid })),
+      toggleSafeArea: () => set((state: EditorState) => ({ showSafeArea: !state.showSafeArea })),
+      toggleLayerPanel: () => set((state: EditorState) => ({ showLayerPanel: !state.showLayerPanel })),
+      togglePropertyPanel: () => set((state: EditorState) => ({ showPropertyPanel: !state.showPropertyPanel })),
       reset: () => set(initialState),
     }),
     {
       limit: 50,
-      partialize: (state) => ({
+      partialize: (state: EditorState) => ({
         layers: state.layers,
       }),
     }
