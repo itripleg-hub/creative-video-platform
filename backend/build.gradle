@@ -1,12 +1,13 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.3'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.4.3'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.company'
 version = '0.1.0-SNAPSHOT'
 sourceCompatibility = '17'
+targetCompatibility = '17'
 
 configurations {
     compileOnly {
@@ -44,7 +45,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // AWS SDK for S3 presigned URLs
-    implementation platform('software.amazon.awssdk:bom:2.24.6')
+    implementation platform('software.amazon.awssdk:bom:2.29.0')
     implementation 'software.amazon.awssdk:s3'
 
     // Lombok
@@ -52,12 +53,12 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // MapStruct
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // Hypersistence Utils for JSONB support
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.3'
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.9.0'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
