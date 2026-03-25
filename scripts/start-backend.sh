@@ -16,11 +16,7 @@ export STORAGE_INPUT_BUCKET=creative-input
 export STORAGE_OUTPUT_BUCKET=creative-output
 
 echo "Building backend..."
-./gradlew build -x test --quiet 2>/dev/null || {
-  echo "Gradle wrapper not found. Generating..."
-  gradle wrapper --gradle-version 8.5
-  ./gradlew build -x test --quiet
-}
+./gradlew build -x test --quiet
 
 echo "Starting backend on http://localhost:8080"
 ./gradlew bootRun
