@@ -22,7 +22,7 @@ public class DataInitializer {
                 User admin = new User();
                 admin.setEmail("admin@localhost.com");
                 admin.setPasswordHash(passwordEncoder.encode("admin!"));
-                admin.setRole(UserRole.ROLE_ADMIN);
+                admin.setRole(UserRole.ADMIN);
                 admin.setActivated(true);
                 userRepository.save(admin);
                 log.info("Created default admin user: admin@localhost.com");

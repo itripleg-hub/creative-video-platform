@@ -6,8 +6,11 @@ plugins {
 
 group = 'com.company'
 version = '0.1.0-SNAPSHOT'
-sourceCompatibility = '17'
-targetCompatibility = '17'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 configurations {
     compileOnly {
@@ -77,9 +80,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-compileJava {
+tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += [
         '-Amapstruct.defaultComponentModel=spring',
         '-Amapstruct.unmappedTargetPolicy=IGNORE'
     ]
+    options.encoding = 'UTF-8'
 }
